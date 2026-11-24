@@ -26,7 +26,7 @@ Supports FoundryVTT v13 and v14
 
 - Joining/leaving the voice channel
 - A user started/stopped speaking
-- A user muted their microphone/deafened
+- A user muting/unmuting their microphone or deafening/undeafening themselves
 - A moderator muted/deafened a user
 - A user's profile changed (nickname, avatar, etc.)
 - Once when the relay starts / the channel changes: the voice channel's name and members
