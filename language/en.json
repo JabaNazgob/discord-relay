@@ -344,6 +344,12 @@
                 "relayStarted": "relay started",
                 "relayStopped": "relay stopped"
             },
+            "by": {
+                "any": "self or moderator",
+                "self": "by themselves",
+                "server": "by a moderator"
+            },
+            "byTooltip": "Who did it: the member themselves or a Discord server moderator",
             "targets": {
                 "gm": "once, at the GM",
                 "everyone": "at every player",

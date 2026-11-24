@@ -12,8 +12,9 @@ import { getLinkedFoundryUsers, voiceChannel } from "./voiceChannel.js"
 // - Правила игрока: флаг пользователя. Выполняются только у самого игрока, с его правами
 // - События приходят каждому клиенту, поэтому каждый клиент сам решает, выполнять ли правило у себя
 //
-// Правило: {id, enabled, event, macroUuid, target, userIds, allowWithoutPermission, cooldownSec}
+// Правило: {id, enabled, event, by, macroUuid, target, userIds, allowWithoutPermission, cooldownSec}
 // - target (только правила мира): "gm" (один раз, у ГМа) / "everyone" / "linked" (у игрока, привязанного к участнику) / "users"
+// - by (только микрофон и звук): "any" (сам или модератор) / "self" (сам участник) / "server" (модератор сервера)
 export const macroRules = {}
 
 // События, на которые можно повесить макрос
@@ -27,6 +28,16 @@ export const RULE_TARGETS = ["gm", "everyone", "linked", "users"]
 // События без участника: у них некого считать «привязанным игроком», и правило «у привязанного» не сработает никогда
 // - У событий ретранслятора «привязанный» - сам ретранслятор, поэтому их здесь нет
 export const RULE_EVENTS_WITHOUT_MEMBER = ["channelLoaded"]
+// Кем выключен микрофон или звук - выбор есть только у этих событий
+export const RULE_BY = ["any", "self", "server"]
+export const RULE_EVENTS_WITH_BY = ["muted", "unmuted", "deafened", "undeafened"]
+// Поле участника для «сам» / «модератор»: событие -> [поле, значение]
+// - «any» берёт общее mute / deaf: срабатывает, только когда меняется итог (был слышен -> стал не слышен)
+// - «self» / «server» смотрят на своё поле: модератор выключил микрофон тому, кто уже выключил его сам, - для «server» это событие
+const BY_FIELDS = {
+    self: {selfMute: ["muted", "unmuted"], selfDeaf: ["deafened", "undeafened"]},
+    server: {serverMute: ["muted", "unmuted"], serverDeaf: ["deafened", "undeafened"]},
+}
 
 // Когда правило последний раз выполнялось у этого клиента (для ограничения частоты)
 const lastRunByRuleId = new Map()
@@ -44,6 +55,7 @@ export function createRule(isWorldRule) {
         id: foundry.utils.randomID(),
         enabled: true,
         event: "speakingStart",
+        by: "any",
         macroUuid: null,
         target: isWorldRule ? "gm" : "self",
         userIds: [],
@@ -59,6 +71,8 @@ function sanitizeRule(rule, isWorldRule) {
         id: String(rule.id),
         enabled: rule.enabled !== false,
         event: RULE_EVENTS.includes(rule.event) ? rule.event : "speakingStart",
+        // Правила, созданные до появления поля, - «сам или модератор», как и работали
+        by: RULE_BY.includes(rule.by) ? rule.by : "any",
         macroUuid: rule.macroUuid ? String(rule.macroUuid) : null,
         target: isWorldRule ? (RULE_TARGETS.includes(rule.target) ? rule.target : "gm") : "self",
         userIds: isWorldRule && Array.isArray(rule.userIds) ? rule.userIds.map(String) : [],
@@ -149,12 +163,19 @@ function isWorldRuleForMe(rule, context) {
     return false
 }
 
+// Подходит ли правило под событие
+// - by: кем выключен микрофон или звук (только для RULE_EVENTS_WITH_BY); у остальных событий не проверяется
+function matchesEvent(rule, eventKey, by) {
+    if (!rule.enabled || rule.event !== eventKey) return false
+    return !RULE_EVENTS_WITH_BY.includes(eventKey) || rule.by === by
+}
+
 // Запуск правил для события
 // - context: данные события для макроса (см. buildScope) + linkedUserIds
-function runRules(eventKey, context) {
-    const worldRules = macroRules.getWorldRules().filter(rule => rule.enabled && rule.event === eventKey && isWorldRuleForMe(rule, context))
+function runRules(eventKey, context, by = "any") {
+    const worldRules = macroRules.getWorldRules().filter(rule => matchesEvent(rule, eventKey, by) && isWorldRuleForMe(rule, context))
     const ownRules = (!game.user.isGM && macroRules.playerRulesAllowed())
-        ? macroRules.getUserRules().filter(rule => rule.enabled && rule.event === eventKey)
+        ? macroRules.getUserRules().filter(rule => matchesEvent(rule, eventKey, by))
         : []
     for (const rule of worldRules) executeRule(rule, context, true)
     for (const rule of ownRules) executeRule(rule, context, false)
@@ -215,9 +236,9 @@ onSocket("MACRO_RULE_PROBLEM", (data, senderId) => {
 macroRules.test = async (isWorld, ruleId) => {
     const rule = (isWorld ? macroRules.getWorldRules() : macroRules.getUserRules()).find(r => r.id === ruleId)
     if (!rule) return
-    await executeRule(rule, buildTestContext(rule.event), isWorld, {test: true})
+    await executeRule(rule, buildTestContext(rule.event, rule.by), isWorld, {test: true})
 }
-function buildTestContext(type) {
+function buildTestContext(type, by = "any") {
     const members = voiceChannel.getMembers()
     const ownId = getSettings("foundryDiscordIdsMap", false)?.[game.user.id]
     const member = members.find(m => m.id === ownId) ?? members[0] ?? {
@@ -231,10 +252,12 @@ function buildTestContext(type) {
     const toggles = {muted: ["mute", true], unmuted: ["mute", false], deafened: ["deaf", true], undeafened: ["deaf", false]}
     if (toggles[type]) {
         const [field, value] = toggles[type]
-        const selfField = field === "mute" ? "selfMute" : "selfDeaf"
-        context.member = {...member, [field]: value, [selfField]: value}
-        context.previous = {...member, [field]: !value, [selfField]: !value}
-        context.changed = {[field]: value, [selfField]: value}
+        // «Модератор» - меняем serverMute / serverDeaf, иначе - selfMute / selfDeaf
+        const prefix = by === "server" ? "server" : "self"
+        const ownField = prefix + (field === "mute" ? "Mute" : "Deaf")
+        context.member = {...member, [field]: value, [ownField]: value}
+        context.previous = {...member, [field]: !value, [ownField]: !value}
+        context.changed = {[field]: value, [ownField]: value}
     }
     if (type === "updated") {
         context.previous = {...member, nick: `${member.nick} (old)`}
@@ -298,7 +321,17 @@ function memberContext(type, member, {foundryUsers = [], previous = null, change
 
 Hooks.on(HOOKS.MEMBER_JOINED, (member, context) => runRules("joined", memberContext("joined", member, context)))
 Hooks.on(HOOKS.MEMBER_LEFT, (member, context) => runRules("left", memberContext("left", member, context)))
-Hooks.on(HOOKS.MEMBER_UPDATED, (member, changed, context) => runRules("updated", memberContext("updated", member, context)))
+Hooks.on(HOOKS.MEMBER_UPDATED, (member, changed, context) => {
+    runRules("updated", memberContext("updated", member, context))
+    // Микрофон / звук: «сам» и «модератор» - по своим полям (см. BY_FIELDS)
+    for (const [by, fields] of Object.entries(BY_FIELDS)) {
+        for (const [field, [onType, offType]] of Object.entries(fields)) {
+            if (!(field in changed)) continue
+            const type = changed[field] ? onType : offType
+            runRules(type, memberContext(type, member, context), by)
+        }
+    }
+})
 Hooks.on(HOOKS.MEMBER_MUTE_CHANGED, (member, muted, context) => {
     const type = muted ? "muted" : "unmuted"
     runRules(type, memberContext(type, member, context))

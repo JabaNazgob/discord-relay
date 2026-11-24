@@ -216,10 +216,12 @@ Hooks.on("discord-relay.memberJoined", (member) => {
 
 ### React only to moderator mutes
 
+`memberMuteChanged` fires only when the combined `mute` changes. If a member already muted themselves and then a moderator mutes them too, the combined value stays the same — so watch the `serverMute` field itself in `memberUpdated`:
+
 ```js
-Hooks.on("discord-relay.memberMuteChanged", (member, muted, {changed}) => {
+Hooks.on("discord-relay.memberUpdated", (member, changed) => {
     if (!("serverMute" in changed)) return
-    console.log(`${member.nick}: a moderator ${muted ? "muted" : "unmuted"} the microphone`)
+    console.log(`${member.nick}: a moderator ${changed.serverMute ? "muted" : "unmuted"} the microphone`)
 })
 ```
 

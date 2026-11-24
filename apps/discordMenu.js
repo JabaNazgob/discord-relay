@@ -5,7 +5,7 @@ import { relayNetwork, USER_STATUS as U } from "../scripts/relayNetwork.js"
 import { voiceChannel } from "../scripts/voiceChannel.js"
 import { isDiscordId, userLinks } from "../scripts/userLinks.js"
 import { eventLog } from "../scripts/eventLog.js"
-import { macroRules, RULE_EVENTS, RULE_EVENTS_WITHOUT_MEMBER, RULE_TARGETS } from "../scripts/macroRules.js"
+import { macroRules, RULE_BY, RULE_EVENTS, RULE_EVENTS_WITH_BY, RULE_EVENTS_WITHOUT_MEMBER, RULE_TARGETS } from "../scripts/macroRules.js"
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api
 
 // Открытое окно модуля (окно может быть только одно)
@@ -683,6 +683,7 @@ function getMacrosContext() {
         allowPlayerRules: macroRules.playerRulesAllowed(),
         playerRulesDisabled: !isGM && !macroRules.playerRulesAllowed(),
         eventOptions: Object.fromEntries(RULE_EVENTS.map(key => [key, modLoc(`macros.events.${key}`)])),
+        byOptions: Object.fromEntries(RULE_BY.map(key => [key, modLoc(`macros.by.${key}`)])),
         help: getMacrosHelp(),
     }
 }
@@ -698,6 +699,7 @@ function getRuleContext(rule, isWorld) {
         ...rule,
         targetOptions: Object.fromEntries(targets.map(key => [key, modLoc(`macros.targets.${key}`)])),
         linkedNeverRuns: isWorld && noMember && rule.target === "linked",
+        showBy: RULE_EVENTS_WITH_BY.includes(rule.event),
         cooldownSec: rule.cooldownSec ?? "",
         macro: macro ? {uuid: macro.uuid, name: macro.name, img: macro.img} : null,
         macroMissing: !!rule.macroUuid && !macro,
@@ -738,6 +740,7 @@ function activateMacroRules(element) {
                 changes = {[input.name]: input.checked}
                 break
             case "event":
+            case "by":
             case "target":
                 changes = {[input.name]: input.value}
                 break

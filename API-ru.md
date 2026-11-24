@@ -216,10 +216,12 @@ Hooks.on("discord-relay.memberJoined", (member) => {
 
 ### Реагировать только на мут модератором
 
+`memberMuteChanged` вызывается, только когда меняется итог `mute`. Если участник уже выключил микрофон сам, а потом его выключил и модератор, итог не меняется — поэтому смотрим на само поле `serverMute` в `memberUpdated`:
+
 ```js
-Hooks.on("discord-relay.memberMuteChanged", (member, muted, {changed}) => {
+Hooks.on("discord-relay.memberUpdated", (member, changed) => {
     if (!("serverMute" in changed)) return
-    console.log(`${member.nick}: модератор ${muted ? "выключил" : "включил"} микрофон`)
+    console.log(`${member.nick}: модератор ${changed.serverMute ? "выключил" : "включил"} микрофон`)
 })
 ```
 

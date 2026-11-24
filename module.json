@@ -33,6 +33,11 @@
         }
     ],
     "id": "discord-relay",
-    "manifest": "https://module.fvtt.club/s/14msXkrLyIgYxQpo/download",
-    "download": "https://module.fvtt.club/s/b8rTAAACZkvsuFqo/download"
+    "url": "https://github.com/JabaNazgob/discord-relay",
+    "manifest": "https://github.com/JabaNazgob/discord-relay/releases/latest/download/module.json",
+    "download": "https://github.com/JabaNazgob/discord-relay/releases/download/v1.0.0/discord-relay.zip",
+    "readme": "https://github.com/JabaNazgob/discord-relay#readme",
+    "changelog": "https://github.com/JabaNazgob/discord-relay/blob/main/CHANGELOG.md",
+    "bugs": "https://github.com/JabaNazgob/discord-relay/issues",
+    "license": "LICENSE"
 }

@@ -6,6 +6,8 @@ The module has been rewritten from scratch. Saved settings (voice channel, profi
 
 The module is now called **Discord Relay** everywhere (it used to be "Discord Voicechat Sync" in the module list and "DiscordBridge" in the settings).
 
+The module has moved to GitHub: https://github.com/JabaNazgob/discord-relay. Report bugs there (Issues). Updates now come from there; you don't need to reinstall the module, Foundry switches over by itself with this update.
+
 ### Before updating: relay players
 
 - **Every player who runs the relay must update the TamperMonkey script** to version 1.1.0. The old script (0.3.0) does not work with this version. The module tells you if your script is outdated. To update, open the module window → "Guide" tab → "Install script", then press "Update" in TamperMonkey.
@@ -25,7 +27,7 @@ The module is now called **Discord Relay** everywhere (it used to be "Discord Vo
 - The voice channel list shows muted and deafened members; players who join the world later see the current members right away.
 - The "Recent activity" log works now. Speech events are logged only if you tick "Speech".
 - Clearing the voice channel link asks for confirmation (it stops all relays).
-- New "Macros" tab: run a macro on Discord events (joined, left, muted, started speaking, etc.), for the GM, every player, the linked player or selected players. Players can have their own rules if the GM allows it. A cheat sheet of macro variables is in the tab.
+- New "Macros" tab: run a macro on Discord events (joined, left, muted, started speaking, etc.), for the GM, every player, the linked player or selected players. Players can have their own rules if the GM allows it. A cheat sheet of macro variables is in the tab. For mute and deafen events you can choose who did it: the member themselves, a moderator, or either.
 - New setting "Minimum speech duration (ms)", 400 by default: short sounds (coughs, clicks) no longer trigger "started speaking". 0 disables the filter.
 - New setting "Stopped speaking delay (ms)", 0 (off) by default: a short pause inside a phrase no longer counts as the end of speech.
 - New "Settings" tab: all module settings right in the window. Players can see world settings, but only the GM can change them.

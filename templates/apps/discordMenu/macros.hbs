@@ -26,6 +26,10 @@
                             <input type="checkbox" name="enabled" {{checked rule.enabled}} data-tooltip="{{localize "discord-relay.macros.enabledTooltip"}}">
                             <span class="dsr-rule__word">{{localize "discord-relay.macros.when"}}</span>
                             <select name="event">{{selectOptions @root.macros.eventOptions selected=rule.event}}</select>
+                            {{!-- Кем: только для микрофона и звука --}}
+                            {{#if rule.showBy}}
+                                <select name="by" data-tooltip="{{localize "discord-relay.macros.byTooltip"}}">{{selectOptions @root.macros.byOptions selected=rule.by}}</select>
+                            {{/if}}
                             <span class="dsr-rule__word">{{localize "discord-relay.macros.run"}}</span>
                             {{!-- Макрос: перетащить сюда --}}
                             <div class="dsr-rule__macro dsr-macro-drop" data-tooltip="{{localize "discord-relay.macros.dropTooltip"}}">
