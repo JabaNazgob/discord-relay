@@ -1,0 +1,22 @@
+{{!-- Настройки ретранслятора (вкладка «Ретранслятор») --}}
+<section class="tab dsr-tab-content {{tab.cssClass}}" data-group="primary" data-tab="relay">
+    <div class="dsr-card">
+        {{!-- Ссылка на голосовой канал --}}
+        <div class="form-group dsr-voice-url">
+            <label>
+                <i class="dsr-voice-url__icon fas fa-circle-{{#if voiceChat.isValid}}check{{else}}xmark{{/if}}"></i>
+                {{localize "discord-relay.discordMenu.relayStatusConfig.voiceUrlLabel"}}
+            </label>
+            <div class="form-fields">
+                <input type="text" name="voiceUrl" value="{{voiceChat.fullId}}" placeholder="{{localize "discord-relay.discordMenu.relayStatusConfig.voiceUrlPlaceholder"}}" {{disabled voiceChat.readOnly}}>
+            </div>
+            <p class="hint">
+                {{#if voiceChat.canEdit}}
+                    {{localize "discord-relay.discordMenu.relayStatusConfig.voiceUrlHint"}}
+                {{else}}
+                    {{localize "discord-relay.discordMenu.relayStatusConfig.voiceUrlGmOnly"}}
+                {{/if}}
+            </p>
+        </div>
+    </div>
+</section>

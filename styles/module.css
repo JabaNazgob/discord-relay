@@ -1,0 +1,893 @@
+/* ==================================================
+   Все правила ограничены классом окна модуля (.discord-relay-app),
+   чтобы не задевать интерфейс Foundry и других модулей.
+   Цвета фона и рамок считаются от цвета текста темы (currentColor),
+   поэтому окно само подстраивается под светлую и тёмную тему.
+   ================================================== */
+
+/* ——————————————————{ ПЕРЕМЕННЫЕ }—————————————————— */
+.discord-relay-app {
+  --dsr-discord-blurple: #5865f2;
+  --dsr-discord-speaker-green: #50b86f;
+  --dsr-base-red: #ed2a21;
+  --dsr-base-green: #74b949;
+  --dsr-warning-color: #c9a42a;
+  --dsr-card-background: color-mix(in srgb, currentColor 6%, transparent);
+  --dsr-card-border: color-mix(in srgb, currentColor 18%, transparent);
+  --dsr-text-muted: color-mix(in srgb, currentColor 65%, transparent);
+}
+
+/* ————————————————————{ ОКНО }————————————————————— */
+.discord-relay-app .window-content {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  align-content: start;
+  gap: 10px;
+  min-height: 380px;
+  padding: 1rem;
+}
+/* Все части окна на всю ширину, кроме пары «ретрансляторы игроков | голосовой канал» */
+.discord-relay-app .window-content > * {
+  grid-column: 1 / -1;
+}
+.discord-relay-app .window-content > .dsr-relay-users-part,
+.discord-relay-app .window-content > .dsr-voice-channel-part {
+  grid-column: auto;
+}
+
+/* ———————————————————{ ВКЛАДКИ }——————————————————— */
+.discord-relay-app .dsr-tabs {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  border-bottom: 1px solid var(--dsr-card-border);
+}
+.discord-relay-app .dsr-tab-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+}
+.discord-relay-app .dsr-tab-button:hover {
+  border-bottom-color: var(--dsr-card-border);
+}
+.discord-relay-app .dsr-tab-button.active {
+  border-bottom-color: var(--dsr-discord-blurple);
+  font-weight: bold;
+}
+
+.discord-relay-app .dsr-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.discord-relay-app .dsr-tab-content:not(.active) {
+  display: none;
+}
+
+/* ——————————————————{ КАРТОЧКИ }—————————————————— */
+.discord-relay-app .dsr-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0.75rem;
+  border: 1px solid var(--dsr-card-border);
+  border-radius: 0.5rem;
+  background: var(--dsr-card-background);
+}
+
+/* ————————————————{ ПЛАШКИ-ПОДСКАЗКИ }————————————— */
+.discord-relay-app .dsr-notice {
+  --dsr-notice-color: var(--dsr-discord-blurple);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 2px solid var(--dsr-notice-color);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--dsr-notice-color) 18%, transparent);
+  font-weight: 500;
+}
+.discord-relay-app .dsr-notice > i {
+  color: var(--dsr-notice-color);
+}
+.discord-relay-app .dsr-notice--warning {
+  --dsr-notice-color: var(--dsr-warning-color);
+}
+
+/* —————————————{ СОСТОЯНИЕ РЕТРАНСЛЯТОРА }————————— */
+.discord-relay-app .dsr-relay-status {
+  --dsr-status-color: var(--dsr-card-border);
+  border-left: 4px solid var(--dsr-status-color);
+}
+.discord-relay-app .dsr-relay-status--success {
+  --dsr-status-color: var(--dsr-base-green);
+}
+.discord-relay-app .dsr-relay-status--info {
+  --dsr-status-color: var(--dsr-discord-blurple);
+}
+.discord-relay-app .dsr-relay-status--warning {
+  --dsr-status-color: var(--dsr-warning-color);
+}
+.discord-relay-app .dsr-relay-status--error {
+  --dsr-status-color: var(--dsr-base-red);
+}
+.discord-relay-app .dsr-relay-status__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.discord-relay-app .dsr-relay-status__header .fa-tower-cell {
+  font-size: 18px;
+  color: var(--dsr-status-color);
+}
+.discord-relay-app .dsr-relay-status__header label {
+  font-size: 15px;
+  font-weight: bold;
+}
+.discord-relay-app .dsr-relay-status__title {
+  flex: 1;
+  font-weight: bold;
+  color: var(--dsr-status-color);
+}
+.discord-relay-app .dsr-relay-status--neutral .dsr-relay-status__title {
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app button.dsr-relay-status__button {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 0 12px;
+}
+.discord-relay-app button.dsr-relay-status__button.dsr-active {
+  border-color: var(--dsr-base-red);
+}
+.discord-relay-app .dsr-relay-status__text {
+  margin: 0;
+}
+.discord-relay-app .dsr-relay-status__actions {
+  display: flex;
+  gap: 8px;
+}
+.discord-relay-app .dsr-relay-status__actions button {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 0 12px;
+}
+.discord-relay-app .dsr-relay-status__details {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-relay-status__details i {
+  width: 1.2em;
+  text-align: center;
+}
+
+/* ——————————————{ ССЫЛКА НА КАНАЛ }——————————————— */
+.discord-relay-app .dsr-voice-url label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.discord-relay-app .dsr-voice-url .fa-circle-check {
+  color: var(--dsr-base-green);
+}
+.discord-relay-app .dsr-voice-url .fa-circle-xmark {
+  color: var(--dsr-base-red);
+}
+.discord-relay-app .dsr-voice-url .hint {
+  color: var(--dsr-text-muted);
+}
+
+/* ——————————————————{ РУКОВОДСТВО }——————————————— */
+.discord-relay-app .dsr-guide {
+  gap: 16px;
+}
+.discord-relay-app .dsr-guide-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0.75rem;
+  border: 1px solid var(--dsr-card-border);
+  border-radius: 0.5rem;
+  background: var(--dsr-card-background);
+}
+.discord-relay-app .dsr-guide-title {
+  margin: 0;
+  border-bottom: 1px solid var(--dsr-card-border);
+}
+.discord-relay-app .dsr-guide-subtitle {
+  margin: 6px 0 0;
+}
+.discord-relay-app .dsr-guide p {
+  margin: 0;
+}
+.discord-relay-app .dsr-guide-list {
+  margin: 0;
+  padding-left: 1.4em;
+}
+.discord-relay-app .dsr-guide-list li + li {
+  margin-top: 4px;
+}
+.discord-relay-app .dsr-guide-list--nested {
+  margin-top: 4px;
+}
+.discord-relay-app .dsr-guide kbd {
+  padding: 0 4px;
+  border: 1px solid var(--dsr-card-border);
+  border-radius: 3px;
+  background: var(--dsr-card-background);
+  font-family: monospace;
+}
+.discord-relay-app .dsr-guide-actions {
+  display: flex;
+  gap: 8px;
+  margin: 6px 0;
+}
+.discord-relay-app .dsr-guide-actions .button,
+.discord-relay-app .dsr-guide-actions button {
+  flex: 0 0 auto;
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+}
+.discord-relay-app .dsr-guide-install {
+  border: 1px solid var(--dsr-discord-blurple);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--dsr-discord-blurple) 20%, transparent);
+  text-decoration: none;
+}
+.discord-relay-app .dsr-copy--success {
+  border-color: var(--dsr-base-green);
+}
+.discord-relay-app .dsr-guide-script summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.discord-relay-app .dsr-guide-script summary::-webkit-details-marker {
+  display: none;
+}
+.discord-relay-app .dsr-guide-script[open] summary i {
+  transform: rotate(90deg);
+}
+.discord-relay-app .dsr-guide-script__code {
+  max-height: 300px;
+  overflow: auto;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--dsr-card-border);
+  border-radius: 4px;
+  background: var(--dsr-card-background);
+  font-size: 11px;
+  white-space: pre;
+}
+.discord-relay-app .dsr-guide-script__error {
+  color: var(--dsr-base-red);
+}
+/* Руководство длинное - прокручиваем его внутри окна, чтобы окно не вырастало выше экрана */
+/* ——————————————————{ НАСТРОЙКИ }————————————————— */
+.discord-relay-app .dsr-settings.active {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.discord-relay-app .dsr-settings__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.discord-relay-app .dsr-settings__header label {
+  font-size: 15px;
+  font-weight: bold;
+}
+.discord-relay-app .dsr-settings__group-hint {
+  margin: 0;
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-settings__field {
+  margin: 0;
+}
+.discord-relay-app .dsr-settings__field .hint {
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-settings__reload {
+  margin-left: 4px;
+  font-size: 0.85em;
+  color: var(--dsr-text-muted);
+}
+
+.discord-relay-app .dsr-guide.active {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* —————————————{ РЕТРАНСЛЯТОРЫ ИГРОКОВ }——————————— */
+.discord-relay-app .dsr-relay-users__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.discord-relay-app .dsr-relay-users__header label {
+  font-size: 15px;
+  font-weight: bold;
+}
+.discord-relay-app .dsr-relay-users__active {
+  flex: 1;
+  text-align: right;
+  color: var(--dsr-text-muted);
+}
+/* Ширина колонок задана заранее (table-layout: fixed): иначе длинный ник растягивает колонку и обрезка «…» не работает */
+.discord-relay-app .dsr-relay-users__table {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.discord-relay-app .dsr-relay-users__table th {
+  text-align: left;
+  color: var(--dsr-text-muted);
+  font-weight: normal;
+}
+.discord-relay-app .dsr-relay-users__table td,
+.discord-relay-app .dsr-relay-users__table th {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--dsr-card-border);
+}
+.discord-relay-app .dsr-relay-users__table tr:last-child td {
+  border-bottom: none;
+}
+.discord-relay-app .dsr-relay-users__status-col {
+  width: 70px;
+  text-align: center !important;
+}
+.discord-relay-app .dsr-relay-users__assign-col {
+  width: 40px;
+  text-align: center;
+}
+.discord-relay-app .dsr-relay-users__user-col {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.discord-relay-app .dsr-relay-users__color {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 4px;
+  border-radius: 50%;
+  border: 1px solid var(--dsr-card-border);
+}
+.discord-relay-app .dsr-relay-users__row.dsr-offline {
+  opacity: 0.5;
+}
+.discord-relay-app .dsr-relay-users__offline {
+  color: var(--dsr-text-muted);
+  font-size: 0.9em;
+}
+.discord-relay-app .dsr-relay-users__row--STARTING .dsr-relay-users__status-col i {
+  color: var(--dsr-discord-blurple);
+}
+.discord-relay-app .dsr-relay-users__row--READY .dsr-relay-users__status-col i {
+  color: var(--dsr-base-green);
+}
+.discord-relay-app .dsr-relay-users__row--ONLINE .dsr-relay-users__status-col i {
+  color: var(--dsr-discord-speaker-green);
+}
+.discord-relay-app .dsr-relay-users__row--STALE .dsr-relay-users__status-col i {
+  color: var(--dsr-warning-color);
+}
+.discord-relay-app .dsr-relay-users__row--OFFLINE .dsr-relay-users__status-col i {
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-relay-users__assign {
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-relay-users__assign.dsr-active,
+.discord-relay-app .dsr-relay-users__preferred {
+  color: var(--dsr-warning-color);
+}
+
+/* ———————————————{ ГОЛОСОВОЙ КАНАЛ }——————————————— */
+.discord-relay-app .dsr-voice-channel-part > .dsr-card,
+.discord-relay-app .dsr-relay-users-part > .dsr-card {
+  height: 100%;
+}
+.discord-relay-app .dsr-voice-channel__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.discord-relay-app .dsr-voice-channel__header label {
+  flex: 1;
+  font-size: 15px;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.discord-relay-app .dsr-voice-channel__count {
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-voice-channel__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.discord-relay-app .dsr-voice-channel__member {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 6px;
+  border-radius: 6px;
+}
+.discord-relay-app .dsr-voice-channel__member:hover {
+  background: var(--dsr-card-background);
+}
+.discord-relay-app .dsr-voice-channel__avatar {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px transparent;
+  transition: box-shadow 0.1s;
+}
+.discord-relay-app .dsr-voice-channel__avatar img {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.discord-relay-app .dsr-voice-channel__member.dsr-speaking .dsr-voice-channel__avatar {
+  box-shadow: 0 0 0 2px var(--dsr-discord-speaker-green);
+}
+.discord-relay-app .dsr-voice-channel__nick {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.discord-relay-app .dsr-voice-channel__bot {
+  padding: 0 4px;
+  border-radius: 3px;
+  background: var(--dsr-discord-blurple);
+  color: #fff;
+  font-size: 10px;
+  font-weight: bold;
+}
+.discord-relay-app .dsr-voice-channel__icons {
+  display: flex;
+  gap: 6px;
+  color: var(--dsr-base-red);
+}
+.discord-relay-app .dsr-voice-channel__empty {
+  color: var(--dsr-text-muted);
+  font-style: italic;
+}
+.discord-relay-app .dsr-voice-channel__warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-voice-channel__warning i {
+  color: var(--dsr-warning-color);
+}
+
+/* ————————————{ ПРИВЯЗКА ПРОФИЛЕЙ DISCORD }———————— */
+.discord-relay-app .dsr-relay-users__discord-col {
+  width: 45%;
+  position: relative;
+}
+.discord-relay-app .dsr-drop-target.dsr-drag-over {
+  outline: 2px dashed var(--dsr-discord-blurple);
+  outline-offset: -2px;
+}
+.discord-relay-app .dsr-relay-users__hint {
+  margin: 0;
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-discord-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  border-radius: 12px;
+  border: 1px solid var(--dsr-card-border);
+  background: var(--dsr-card-background);
+  max-width: 100%;
+}
+.discord-relay-app .dsr-discord-chip.dsr-editable {
+  cursor: pointer;
+}
+.discord-relay-app .dsr-discord-chip__avatar {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.discord-relay-app .dsr-discord-chip__nick {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.discord-relay-app .dsr-discord-chip__unlink {
+  visibility: hidden;
+  color: var(--dsr-base-red);
+}
+.discord-relay-app .dsr-discord-chip.dsr-editable:hover {
+  border-color: var(--dsr-base-red);
+}
+.discord-relay-app .dsr-discord-chip.dsr-editable:hover .dsr-discord-chip__unlink {
+  visibility: visible;
+}
+.discord-relay-app .dsr-discord-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.discord-relay-app .dsr-discord-input {
+  flex: 1;
+  min-width: 0;
+}
+.discord-relay-app .dsr-discord-pending,
+.discord-relay-app .dsr-discord-readonly {
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-discord-readonly {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.discord-relay-app .dsr-discord-chip__nick {
+  min-width: 0;
+}
+.discord-relay-app .dsr-discord-suggest {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  max-height: 240px;
+  overflow-y: auto;
+  margin-top: 2px;
+  padding: 4px;
+  border: 1px solid var(--dsr-card-border);
+  border-radius: 6px;
+  /* Цвет фона задаётся из JS: берётся фон окна, чтобы подходить к любой теме */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+.discord-relay-app .dsr-discord-suggest.dsr-open {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.discord-relay-app .dsr-discord-suggest.dsr-up {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: 2px;
+}
+.discord-relay-app button.dsr-discord-suggest__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  height: auto;
+  padding: 3px 6px;
+  border: none;
+  background: transparent;
+  text-align: left;
+}
+.discord-relay-app button.dsr-discord-suggest__item:hover {
+  background: var(--dsr-card-background);
+}
+.discord-relay-app .dsr-discord-suggest__item img {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+}
+.discord-relay-app .dsr-discord-suggest__nick {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.discord-relay-app .dsr-discord-suggest__meta {
+  color: var(--dsr-text-muted);
+  font-size: 0.85em;
+}
+.discord-relay-app .dsr-voice-channel__member[draggable="true"] {
+  cursor: grab;
+}
+
+/* ————————————————————{ ЖУРНАЛ }———————————————————— */
+.discord-relay-app .dsr-log__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.discord-relay-app .dsr-log__header > label:first-of-type {
+  flex: 1;
+  font-size: 15px;
+  font-weight: bold;
+}
+.discord-relay-app .dsr-log__speaking {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--dsr-text-muted);
+  cursor: pointer;
+}
+.discord-relay-app .dsr-log__speaking input {
+  margin: 0;
+}
+.discord-relay-app .dsr-log__clear {
+  padding: 0 4px;
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-log__clear:hover {
+  color: var(--dsr-base-red);
+}
+.discord-relay-app .dsr-log__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.discord-relay-app .dsr-log__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.discord-relay-app .dsr-log__item.dsr-new {
+  animation: dsr-log-new 1.5s ease-out;
+}
+@keyframes dsr-log-new {
+  from { background: color-mix(in srgb, var(--dsr-discord-blurple) 30%, transparent); }
+  to { background: transparent; }
+}
+.discord-relay-app .dsr-log__time {
+  flex: 0 0 auto;
+  color: var(--dsr-text-muted);
+  font-family: monospace;
+  font-size: 0.9em;
+}
+.discord-relay-app .dsr-log__avatar {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.discord-relay-app .dsr-log__avatar--icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-log__text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.discord-relay-app .dsr-log__item--muted .dsr-log__text,
+.discord-relay-app .dsr-log__item--deafened .dsr-log__text,
+.discord-relay-app .dsr-log__item--serverMuted .dsr-log__text,
+.discord-relay-app .dsr-log__item--serverDeafened .dsr-log__text,
+.discord-relay-app .dsr-log__item--left .dsr-log__text,
+.discord-relay-app .dsr-log__item--relayStopped .dsr-log__text,
+.discord-relay-app .dsr-log__item--channelCleared .dsr-log__text {
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-log__empty {
+  color: var(--dsr-text-muted);
+  font-style: italic;
+}
+
+/* ————————————————————{ МАКРОСЫ }——————————————————— */
+.discord-relay-app .dsr-macros.active {
+  max-height: 75vh;
+  overflow-y: auto;
+}
+.discord-relay-app .dsr-rules__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.discord-relay-app .dsr-rules__header label {
+  flex: 1;
+  font-size: 15px;
+  font-weight: bold;
+}
+.discord-relay-app button.dsr-rules__add {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 0 12px;
+}
+.discord-relay-app .dsr-rules .hint {
+  margin: 0;
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-rules__allow-players {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.discord-relay-app .dsr-rules__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.discord-relay-app .dsr-rules__empty {
+  margin: 0;
+  color: var(--dsr-text-muted);
+  font-style: italic;
+}
+.discord-relay-app .dsr-rule {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid var(--dsr-card-border);
+  border-radius: 6px;
+}
+.discord-relay-app .dsr-rule.dsr-disabled {
+  opacity: 0.55;
+}
+.discord-relay-app .dsr-rule__main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.discord-relay-app .dsr-rule__main select {
+  width: auto;
+  flex: 0 1 auto;
+}
+.discord-relay-app .dsr-rule__word {
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-rule__macro {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 180px;
+  min-height: 28px;
+  padding: 0 6px;
+  border: 1px dashed var(--dsr-card-border);
+  border-radius: 4px;
+}
+.discord-relay-app .dsr-rule__macro.dsr-drag-over {
+  border-color: var(--dsr-discord-blurple);
+  background: color-mix(in srgb, var(--dsr-discord-blurple) 15%, transparent);
+}
+.discord-relay-app .dsr-rule__macro-name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  overflow: hidden;
+}
+.discord-relay-app .dsr-rule__macro-name img {
+  width: 20px;
+  height: 20px;
+  border: none;
+}
+.discord-relay-app .dsr-rule__macro-name span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.discord-relay-app .dsr-rule__macro-empty,
+.discord-relay-app .dsr-rule__macro-clear {
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-rule__macro-missing {
+  color: var(--dsr-base-red);
+}
+.discord-relay-app .dsr-rule__cooldown {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-rule__cooldown input {
+  width: 60px;
+}
+.discord-relay-app .dsr-rule__test {
+  margin-left: auto;
+  color: var(--dsr-base-green);
+}
+.discord-relay-app .dsr-rule__remove {
+  color: var(--dsr-text-muted);
+}
+.discord-relay-app .dsr-rule__remove:hover {
+  color: var(--dsr-base-red);
+}
+.discord-relay-app .dsr-rule__users {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding-left: 24px;
+}
+.discord-relay-app .dsr-rule__user {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.discord-relay-app .dsr-rule__access {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding-left: 24px;
+  color: var(--dsr-warning-color);
+}
+.discord-relay-app .dsr-rule__access label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: inherit;
+}
+.discord-relay-app .dsr-macros-help summary {
+  cursor: pointer;
+  font-weight: bold;
+}
+.discord-relay-app .dsr-macros-help h4 {
+  margin: 8px 0 0;
+}
+.discord-relay-app .dsr-macros-help p {
+  margin: 0;
+}
+.discord-relay-app .dsr-macros-help__table {
+  margin: 0;
+  border-collapse: collapse;
+}
+.discord-relay-app .dsr-macros-help__table td {
+  padding: 3px 6px;
+  border-bottom: 1px solid var(--dsr-card-border);
+  vertical-align: top;
+}
+.discord-relay-app .dsr-macros-help__table td:first-child {
+  white-space: nowrap;
+}
+.discord-relay-app .dsr-macros-help__code {
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--dsr-card-border);
+  border-radius: 4px;
+  background: var(--dsr-card-background);
+  white-space: pre-wrap;
+}

@@ -1,0 +1,32 @@
+{{!-- Голосовой канал Discord (вкладка «Ретранслятор») --}}
+<section class="tab dsr-tab-content dsr-voice-channel-part {{tab.cssClass}}" data-group="primary" data-tab="relay">
+    <div class="dsr-card dsr-voice-channel">
+        <div class="dsr-voice-channel__header">
+            <i class="fas fa-volume-high"></i>
+            <label>{{voiceChannel.name}}</label>
+            {{#if voiceChannel.loaded}}<span class="dsr-voice-channel__count">{{voiceChannel.members.length}}{{#if voiceChannel.userLimit}}/{{voiceChannel.userLimit}}{{/if}}</span>{{/if}}
+        </div>
+        {{#if voiceChannel.loaded}}
+            <ul class="dsr-voice-channel__list">
+                {{#each voiceChannel.members as |member|}}
+                    <li class="dsr-voice-channel__member{{#if member.speaking}} dsr-speaking{{/if}}" data-discord-user-id="{{member.userId}}" data-tooltip="{{member.tooltip}}">
+                        <span class="dsr-voice-channel__avatar"><img src="{{member.avatarUrl}}" alt=""></span>
+                        <span class="dsr-voice-channel__nick">{{member.nick}}</span>
+                        {{#if member.bot}}<span class="dsr-voice-channel__bot">BOT</span>{{/if}}
+                        <span class="dsr-voice-channel__icons">
+                            {{#if member.mute}}<i class="fas fa-microphone-slash" data-tooltip="{{localize "discord-relay.discordMenu.voiceChat.muted"}}"></i>{{/if}}
+                            {{#if member.deaf}}<i class="fas fa-headphones-simple dsr-deaf" data-tooltip="{{localize "discord-relay.discordMenu.voiceChat.deafened"}}"></i>{{/if}}
+                        </span>
+                    </li>
+                {{else}}
+                    <li class="dsr-voice-channel__empty">{{localize "discord-relay.discordMenu.voiceChat.empty"}}</li>
+                {{/each}}
+            </ul>
+        {{else}}
+            <div class="dsr-voice-channel__warning">
+                <i class="fas fa-triangle-exclamation"></i>
+                <span>{{voiceChannel.notLoadedText}}</span>
+            </div>
+        {{/if}}
+    </div>
+</section>

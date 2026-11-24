@@ -1,0 +1,29 @@
+{{!-- Журнал последних действий (вкладка «Ретранслятор») --}}
+<section class="tab dsr-tab-content {{tab.cssClass}}" data-group="primary" data-tab="relay">
+    <div class="dsr-card dsr-log">
+        <div class="dsr-log__header">
+            <i class="fas fa-clipboard-list"></i>
+            <label>{{localize "discord-relay.discordMenu.log.header"}}</label>
+            <label class="dsr-log__speaking" data-tooltip="{{localize "discord-relay.discordMenu.log.speakingTooltip"}}">
+                <input type="checkbox" name="logSpeaking" {{checked eventLog.logSpeaking}}>
+                {{localize "discord-relay.discordMenu.log.speaking"}}
+            </label>
+            <a class="dsr-log__clear" data-action="clearLog" data-tooltip="{{localize "discord-relay.discordMenu.log.clear"}}"><i class="fas fa-trash"></i></a>
+        </div>
+        <ol class="dsr-log__list">
+            {{#each eventLog.entries as |entry|}}
+                <li class="dsr-log__item dsr-log__item--{{entry.type}}{{#if entry.isNew}} dsr-new{{/if}}">
+                    <span class="dsr-log__time">{{entry.time}}</span>
+                    {{#if entry.avatarUrl}}
+                        <img class="dsr-log__avatar" src="{{entry.avatarUrl}}" alt="">
+                    {{else}}
+                        <span class="dsr-log__avatar dsr-log__avatar--icon"><i class="{{entry.icon}}"></i></span>
+                    {{/if}}
+                    <span class="dsr-log__text">{{entry.text}}</span>
+                </li>
+            {{else}}
+                <li class="dsr-log__empty">{{localize "discord-relay.discordMenu.log.empty"}}</li>
+            {{/each}}
+        </ol>
+    </div>
+</section>

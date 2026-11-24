@@ -1,0 +1,58 @@
+{{!-- Состояние ретранслятора (вкладка «Ретранслятор») --}}
+<section class="tab dsr-tab-content {{tab.cssClass}}" data-group="primary" data-tab="relay">
+    <div class="dsr-card dsr-relay-status dsr-relay-status--{{relayStatus.level}}">
+        <div class="dsr-relay-status__header">
+            <i class="fas fa-tower-cell"></i>
+            <label>{{localize "discord-relay.discordMenu.headerStatusLabel"}}</label>
+            <span class="dsr-relay-status__title">{{relayStatus.title}}</span>
+            {{!-- Кнопка включения/выключения --}}
+            <button type="button" class="dsr-relay-status__button{{#if relayStatus.isRunning}} dsr-active{{/if}}" data-action="toggleRelay" {{disabled relayStatus.buttonDisabled}}>
+                <i class="fas fa-power-off"></i>
+                <span>{{relayStatus.buttonLabel}}</span>
+            </button>
+        </div>
+        {{!-- Пояснение к статусу --}}
+        <p class="dsr-relay-status__text">{{relayStatus.text}}</p>
+        {{!-- Кнопки-подсказки --}}
+        {{#if relayStatus.showCopyWorldLink}}
+            <div class="dsr-relay-status__actions">
+                <button type="button" data-action="copyWorldLink">
+                    <i class="fas fa-link"></i>
+                    <span>{{localize "discord-relay.discordMenu.copyWorldLink"}}</span>
+                </button>
+            </div>
+        {{/if}}
+        {{#if relayStatus.showOpenGuide}}
+            <div class="dsr-relay-status__actions">
+                <button type="button" data-action="openGuide">
+                    <i class="fas fa-book"></i>
+                    <span>{{localize "discord-relay.discordMenu.openGuide"}}</span>
+                </button>
+            </div>
+        {{/if}}
+        {{!-- Предупреждения --}}
+        {{#each relayStatus.warnings as |warning|}}
+            <div class="dsr-notice dsr-notice--warning">
+                <i class="fas fa-triangle-exclamation"></i>
+                <span>{{warning}}</span>
+            </div>
+        {{/each}}
+        {{!-- Детали работы --}}
+        {{#if relayStatus.isRunning}}
+            <ul class="dsr-relay-status__details">
+                {{#if relayStatus.role}}
+                    <li><i class="fas fa-tower-broadcast"></i> {{localize "discord-relay.discordMenu.details.role"}}: <b>{{relayStatus.role}}</b></li>
+                {{/if}}
+                {{#if relayStatus.scriptVersion}}
+                    <li><i class="fas fa-code"></i> {{localize "discord-relay.discordMenu.details.scriptVersion"}}: <b>{{relayStatus.scriptVersion}}</b></li>
+                {{/if}}
+                {{#if relayStatus.channel}}
+                    <li><i class="fas fa-volume-high"></i> {{localize "discord-relay.discordMenu.details.channel"}}: <b>{{relayStatus.channel.name}}</b> ({{localize "discord-relay.discordMenu.details.userCount"}}: {{relayStatus.channel.userCount}})</li>
+                {{/if}}
+                {{#if relayStatus.lastEvent}}
+                    <li><i class="fas fa-bolt"></i> {{localize "discord-relay.discordMenu.details.lastEvent"}}: <b>{{relayStatus.lastEvent.evt}}</b> ({{relayStatus.lastEvent.time}})</li>
+                {{/if}}
+            </ul>
+        {{/if}}
+    </div>
+</section>

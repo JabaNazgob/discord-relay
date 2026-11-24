@@ -1,0 +1,80 @@
+{{!-- Пользователи FoundryVTT: ретрансляторы и связь с Discord (вкладка «Ретранслятор») --}}
+<section class="tab dsr-tab-content dsr-relay-users-part {{tab.cssClass}}" data-group="primary" data-tab="relay">
+    <div class="dsr-card dsr-relay-users">
+        <div class="dsr-relay-users__header">
+            <i class="fas fa-users"></i>
+            <label>{{localize "discord-relay.discordMenu.relayUsers.header"}}</label>
+            <span class="dsr-relay-users__active">
+                {{#if relayUsers.activeRelayName}}
+                    {{localize "discord-relay.discordMenu.relayUsers.activeRelay"}}: <b>{{relayUsers.activeRelayName}}</b>
+                {{else}}
+                    {{localize "discord-relay.discordMenu.relayUsers.noActiveRelay"}}
+                {{/if}}
+            </span>
+        </div>
+        <table class="dsr-relay-users__table">
+            <thead>
+                <tr>
+                    <th class="dsr-relay-users__status-col">{{localize "discord-relay.discordMenu.relayUsers.headerStatus"}}</th>
+                    <th>{{localize "discord-relay.discordMenu.relayUsers.headerUser"}}</th>
+                    <th class="dsr-relay-users__assign-col"></th>
+                    <th class="dsr-relay-users__discord-col">{{localize "discord-relay.discordMenu.relayUsers.headerDiscord"}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each relayUsers.rows as |row|}}
+                    <tr class="dsr-relay-users__row dsr-relay-users__row--{{row.status}}{{#unless row.online}} dsr-offline{{/unless}}" data-user-id="{{row.id}}">
+                        <td class="dsr-relay-users__status-col" data-tooltip="{{row.tooltip}}">
+                            <i class="{{row.statusIcon}}"></i>
+                        </td>
+                        <td class="dsr-relay-users__user-col">
+                            <span class="dsr-relay-users__color" style="background-color: {{row.color}}"></span>
+                            <span class="dsr-relay-users__name" data-tooltip-text="{{row.name}}">{{row.name}}</span>
+                            {{#unless row.online}}<span class="dsr-relay-users__offline">({{localize "discord-relay.discordMenu.relayUsers.notInGame"}})</span>{{/unless}}
+                        </td>
+                        <td class="dsr-relay-users__assign-col">
+                            {{#if row.canAssign}}
+                                <a class="dsr-relay-users__assign{{#if row.isPreferred}} dsr-active{{/if}}" data-action="setPreferredRelay" data-user-id="{{row.id}}"
+                                   data-tooltip="{{#if row.isPreferred}}{{localize "discord-relay.discordMenu.relayUsers.unassignTooltip"}}{{else}}{{localize "discord-relay.discordMenu.relayUsers.assignTooltip"}}{{/if}}">
+                                    <i class="fa{{#if row.isPreferred}}s{{else}}r{{/if}} fa-star"></i>
+                                </a>
+                            {{else if row.isPreferred}}
+                                <i class="fas fa-star dsr-relay-users__preferred" data-tooltip="{{localize "discord-relay.discordMenu.relayUsers.preferredTooltip"}}"></i>
+                            {{/if}}
+                        </td>
+                        {{!-- Профиль Discord --}}
+                        <td class="dsr-relay-users__discord-col{{#if row.link.canEdit}} dsr-drop-target{{/if}}" data-foundry-user-id="{{row.id}}">
+                            {{#if row.link.profile}}
+                                {{!-- Привязан известный профиль --}}
+                                <div class="dsr-discord-chip{{#if row.link.canEdit}} dsr-editable{{/if}}"
+                                     {{#if row.link.canEdit}}data-action="unlinkDiscord" data-foundry-user-id="{{row.id}}" data-tooltip="{{localize "discord-relay.discordMenu.foundryUserList.unlinkProfile"}}"{{/if}}>
+                                    <img class="dsr-discord-chip__avatar" src="{{row.link.profile.avatarUrl}}" alt="">
+                                    <span class="dsr-discord-chip__nick" data-tooltip-text="{{row.link.profile.label}}">{{row.link.profile.label}}</span>
+                                    {{#if row.link.canEdit}}<i class="fas fa-link-slash dsr-discord-chip__unlink"></i>{{/if}}
+                                </div>
+                            {{else if row.link.canEdit}}
+                                {{!-- Поле ввода с подсказками --}}
+                                <div class="dsr-discord-input-wrap">
+                                    {{#if row.link.value}}<i class="fas fa-hourglass-half dsr-discord-pending" data-tooltip="{{localize "discord-relay.discordMenu.foundryUserList.awatingDataTooltip"}}"></i>{{/if}}
+                                    <input type="text" class="dsr-discord-input" data-foundry-user-id="{{row.id}}" value="{{row.link.value}}"
+                                           placeholder="{{localize "discord-relay.discordMenu.foundryUserList.placeholderDiscord"}}" autocomplete="off">
+                                    <div class="dsr-discord-suggest"></div>
+                                </div>
+                            {{else if row.link.value}}
+                                {{!-- Ожидание профиля (изменить нельзя) --}}
+                                <span class="dsr-discord-readonly" data-tooltip="{{localize "discord-relay.discordMenu.foundryUserList.awatingDataTooltip"}}">
+                                    <i class="fas fa-hourglass-half"></i> {{row.link.value}}
+                                </span>
+                            {{else}}
+                                <span class="dsr-discord-readonly">—</span>
+                            {{/if}}
+                        </td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        {{#if relayUsers.canEditAny}}
+            <p class="hint dsr-relay-users__hint"><i class="fas fa-circle-info"></i> {{localize "discord-relay.discordMenu.iconsTooltip"}}</p>
+        {{/if}}
+    </div>
+</section>

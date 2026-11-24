@@ -1,0 +1,9 @@
+{{!-- Навигация по вкладкам --}}
+<nav class="tabs dsr-tabs" data-group="primary">
+    {{#each tabs as |tab|}}
+        <a class="dsr-tab-button {{tab.cssClass}}" data-action="tab" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+            {{#if tab.icon}}<i class="{{tab.icon}}"></i>{{/if}}
+            <span>{{localize tab.label}}</span>
+        </a>
+    {{/each}}
+</nav>

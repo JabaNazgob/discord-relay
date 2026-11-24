@@ -1,0 +1,389 @@
+{
+    "discord-relay": {
+        "settings": {
+            "discordMenuOpen": "Discord Relay menu",
+            "discordMenuOpenLabel": "Open menu",
+            "discordBridgeIsActive": "Enable Discord Relay",
+            "discordBridgeIsActiveHint": "When disabled, stops sending signals to and from relays. Basically disables the module's functionality",
+            "overlayPopup": "Open the Overlay in a separate window",
+            "overlayPopupHint": "Determines whether the Overlay (StreamKit) opens in a separate window or in a new browser tab",
+            "speakingEventDebounceMs": "Minimum speech duration (ms)",
+            "speakingEventDebounceMsHint": "\"Started speaking\" is only sent if the person speaks longer than this — so short sounds (coughs, clicks) don't trigger highlights or macros. The cost: the start of every phrase is detected with this delay. 0 disables the filter. Applies to all players",
+            "speakingStopDelayMs": "\"Stopped speaking\" delay (ms)",
+            "speakingStopDelayMsHint": "\"Stopped speaking\" is only sent if the person doesn't speak again within this time — so short pauses inside a phrase don't turn off highlights or trigger macros twice. The cost: the end of every phrase is detected with this delay. 0 disables the delay. Applies to all players",
+            "allowPlayerRules": "Allow players to create macro rules",
+            "allowPlayerRulesHint": "Players can assign their own macros to Discord events. Player rules run only for that player and with their permissions"
+        },
+        "relayStatus": {
+            "OFFLINE": "OFFLINE",
+            "STARTING": "STARTING",
+            "READY": "READY",
+            "ONLINE": "ONLINE",
+            "STALE": "SIGNAL LOST"
+        },
+        "relayStatusHint": {
+            "OFFLINE": "the relay is not running",
+            "STARTING": "the relay is running but not working yet",
+            "READY": "working, backup relay",
+            "ONLINE": "working, primary relay",
+            "STALE": "the relay signal was lost"
+        },
+        "relayState": {
+            "IDLE": {
+                "title": "Nobody is relaying",
+                "titleActive": "Relayed by {name}",
+                "text": "Nobody is running the relay right now. Press \"Enable relay\" to become the relay",
+                "textActive": "You can enable the relay too — you'll become a backup and take over if the primary relay disconnects"
+            },
+            "APP": {
+                "title": "FoundryVTT desktop app detected",
+                "text": "The relay only works in a browser: TamperMonkey scripts don't run in the FoundryVTT desktop app. Copy the world link, open it in a browser with TamperMonkey installed and enable the relay there"
+            },
+            "DISABLED": {
+                "title": "Module disabled",
+                "text": "Discord Relay is disabled in the module settings. The GM can enable it"
+            },
+            "NO_CHANNEL": {
+                "title": "No voice channel set",
+                "text": "The GM must enter a Discord voice channel link in the field below"
+            },
+            "POPUP_BLOCKED": {
+                "title": "Window blocked by the browser",
+                "text": "The browser blocked the StreamKit window. Allow pop-ups for this site (usually an icon in the address bar) and press the button again"
+            },
+            "CONNECTING": {
+                "title": "Connecting…",
+                "text": "The StreamKit window is open, waiting for the TamperMonkey script to respond"
+            },
+            "NO_SCRIPT": {
+                "title": "Script not responding",
+                "text": "The TamperMonkey script did not respond. Possible causes: TamperMonkey is not installed or disabled; the script is not installed or disabled; user scripts are not allowed in the browser extension settings. Once fixed, just reload the StreamKit window (F5) and the relay will pick it up"
+            },
+            "OLD_SCRIPT": {
+                "title": "Script outdated",
+                "text": "An incompatible TamperMonkey script version is installed ({version}). Version {minimum} or newer is required. Install the new version from the \"Guide\" tab and enable the relay again"
+            },
+            "WAITING_DISCORD": {
+                "title": "Waiting for Discord…",
+                "text": "The script is connected, waiting for voice channel data from the Discord app"
+            },
+            "DISCORD_SILENT": {
+                "title": "Discord is silent",
+                "text": "The script works, but Discord hasn't sent the channel data. Check whether the Discord app asks to authorize StreamKit (the prompt may be behind other windows) and whether the channel link is correct. Still waiting: as soon as Discord responds, the relay will start working"
+            },
+            "DISCORD_UNREACHABLE": {
+                "title": "No connection to the Discord app",
+                "text": "StreamKit can't connect to the Discord app on this computer. Start the Discord desktop app (the browser version won't work) and log in. Still waiting: as soon as Discord starts, the relay will connect by itself"
+            },
+            "CHANNEL_ERROR": {
+                "title": "Discord didn't return the channel",
+                "text": "Discord responded with an error to the voice channel request: \"{error}\". Most likely the channel link is wrong or your Discord account is not a member of this server. Once the link is fixed, the relay will switch by itself"
+            },
+            "ACTIVE": {
+                "title": "Working",
+                "text": "Voice channel events are arriving in FoundryVTT"
+            },
+            "OVERLAY_CLOSED": {
+                "title": "StreamKit window closed",
+                "text": "The StreamKit window was closed and the relay stopped. Press \"Reopen\" to continue"
+            },
+            "hints": {
+                "APP": "You can only become a relay from a browser: TamperMonkey scripts don't work in the FoundryVTT desktop app. If needed, copy the world link and open it in a browser",
+                "DISABLED": "Discord Relay is disabled in the module settings. The GM can enable it",
+                "NO_CHANNEL": "The GM hasn't set the voice channel yet (field below)"
+            },
+            "warnings": {
+                "overlayUnresponsive": "The StreamKit window hasn't responded for more than 10 seconds. If it is minimized, restore it; if it was closed, the relay will notice by itself",
+                "scriptOutdated": "A new TamperMonkey script version is available ({latest}), you have {version}. The relay works, but it's better to update the script from the \"Guide\" tab",
+                "oldScriptAlongside": "An old version of the script is also enabled in TamperMonkey. Disable or remove it in the TamperMonkey dashboard"
+            }
+        },
+        "discordMenu": {
+            "windowTitle": "Discord Relay",
+            "headerStatusLabel": "Relay status:",
+            "headerRelayButtonActivate": "Enable relay",
+            "headerRelayButtonDeactivate": "Disable relay",
+            "headerRelayButtonReopen": "Reopen",
+            "copyWorldLink": "Copy world link",
+            "openGuide": "Open the guide",
+            "details": {
+                "role": "Role",
+                "rolePrimary": "primary relay",
+                "roleBackup": "backup relay (another player is primary)",
+                "scriptVersion": "Script version",
+                "channel": "Channel",
+                "userCount": "users",
+                "lastEvent": "Last event"
+            },
+            "relayStatusConfig": {
+                "voiceUrlLabel": "Voice channel link",
+                "voiceUrlPlaceholder": "SERVER_ID/VOICE_ID",
+                "voiceUrlHint": "Right-click a voice channel in Discord → \"Copy Link\" → paste it into this field. Alternatively, paste the Discord server ID and voice channel ID separated by \"/\". The link is saved automatically",
+                "voiceUrlGmOnly": "The voice channel is set by the GM",
+                "clearDialog": {
+                    "title": "Clear the voice channel?",
+                    "text": "The field is empty. If you clear the voice channel, all relays will stop and their StreamKit windows will close. To switch to another channel, just paste the new link instead"
+                }
+            },
+            "guide": {
+                "before": {
+                    "title": "Before you start:",
+                    "items": {
+                        "1": "The relay can only be launched in a browser. It doesn't work in the FoundryVTT desktop app — the module detects this and tells you",
+                        "2": "At least 1 user must have the relay active. Note: even if you host FoundryVTT via the desktop app, you can become the relay yourself by joining the world as another user via a browser"
+                    }
+                },
+                "terms": {
+                    "title": "Terms",
+                    "items": {
+                        "1": "Relay: a script that runs in the browser and forwards events from a Discord voice channel to FoundryVTT",
+                        "2": "Relay player: the player who launched the relay"
+                    }
+                },
+                "prep": {
+                    "title": "Preparing and activating the relay",
+                    "intro": "All the following steps must be performed by the relay player.",
+                    "tamper": {
+                        "title": "1) Installing and configuring TamperMonkey",
+                        "items": {
+                            "1": "Install the TamperMonkey extension in your browser and enable it",
+                            "2": "After installing, go to your browser's extension settings and configure TamperMonkey depending on your browser:"
+                        },
+                        "browsers": {
+                            "firefox": "Mozilla Firefox: enabled by default",
+                            "opera": "Opera GX: \"More details\" → \"Allow user scripts\"",
+                            "chrome": "Chrome: \"Details\" → \"Allow user scripts\"",
+                            "edge": "Microsoft Edge: \"Allow user scripts\"",
+                            "other": "If you use another browser, or there are no settings with such names, try to find similar settings if the TamperMonkey dashboard still says \"Please allow user scripts\""
+                        }
+                    },
+                    "script": {
+                        "title": "2) Installing the script",
+                        "items": {
+                            "1": "Press the button below. A new tab will open, and TamperMonkey will offer to install the script",
+                            "2": "Press \"Install\" (or \"Update\" if the script is already installed). The old version of the script will be replaced automatically",
+                            "3": "Make sure the \"Streamkit Speaking Relay\" script is enabled in the TamperMonkey dashboard"
+                        },
+                        "manualTitle": "If the button didn't work: manual installation",
+                        "manual": {
+                            "1": "Open the TamperMonkey dashboard and press [+] (create a new script). If the \"Streamkit Speaking Relay\" script already exists, open it instead of creating a new one",
+                            "2": "Copy the script below, replace ALL text in the editor with it and save:"
+                        }
+                    },
+                    "launch": {
+                        "title": "3) Launching the relay",
+                        "items": {
+                            "1": "Join the FoundryVTT world in the browser where the script is installed and open this window. You can open it from the module settings, a button in the VisualNovelDialogues Theater, or with the game.modules.get(\"discord-relay\").api.openMenu() command",
+                            "2": "The GM enters the voice channel link in the \"Relay\" tab (right-click the channel in Discord → \"Copy Link\")",
+                            "3": "Press \"Enable relay\". The StreamKit window will open. If Discord asks to authorize StreamKit, allow it",
+                            "4": "The \"Working\" status means everything is fine. If something goes wrong, the \"Relay\" tab will say what exactly and how to fix it"
+                        }
+                    },
+                    "notes": {
+                        "title": "Notes:",
+                        "items": {
+                            "1": "You must be in this voice channel to receive the \"Started speaking\" and \"Stopped speaking\" events",
+                            "2": "Don't close the StreamKit window during the game: closing it stops the relay. Minimizing is fine",
+                            "3": "If you reload the FoundryVTT page, the relay will pick up the already open StreamKit window by itself"
+                        }
+                    }
+                },
+                "vnd": {
+                    "title": "VisualNovelDialogues integration",
+                    "intro": "The VisualNovelDialogues module automatically receives relay events. You can configure how VisualNovelDialogues reacts to these events in its settings. By default, on \"Started speaking\" and \"Stopped speaking\" events VisualNovelDialogues highlights the character Portraits of the corresponding players. To make it work, follow the instructions below",
+                    "subtitle": "Preparation",
+                    "items": {
+                        "1": "In the \"Relay\" tab of this window, assign the corresponding Discord profiles to FoundryVTT users",
+                        "2": "In the FoundryVTT player list (usually bottom left), click a player's name and choose \"User Configuration\". In the window that opens, select the corresponding actor as the player's Character",
+                        "3": "Next, open the editor of the Portrait you need, and in the \"General\" tab link the corresponding actor to this portrait",
+                        "4": "Now, when this Portrait is in the Theater, it will be highlighted while the corresponding player is speaking. You can configure the brightness and size of the \"highlighted\" Portrait in the VisualNovelDialogues settings"
+                    }
+                },
+                "script": {
+                    "install": "Install script",
+                    "copy": "Copy",
+                    "copied": "Copied",
+                    "copyError": "Failed to copy the script",
+                    "loadError": "Failed to load the script.",
+                    "openTamperMonkey": "Open the TamperMonkey website"
+                },
+                "installDialog": {
+                    "title": "Installing the script",
+                    "text": "The TamperMonkey extension must be installed in your browser to install the script. Without it, only the script text will open instead of an installation.",
+                    "install": "TamperMonkey is installed — install the script",
+                    "getTamperMonkey": "Install TamperMonkey"
+                }
+            },
+            "tabs": {
+                "relay": "Relay",
+                "macros": "Macros",
+                "settings": "Settings",
+                "guide": "Guide"
+            },
+            "settingsTab": {
+                "world": "For the whole world",
+                "worldHint": "Apply to all players. Only the GM can change them",
+                "worldHintPlayer": "Apply to all players. Only the GM can change them, you can only view them",
+                "client": "Just for you",
+                "clientHint": "Stored in this browser and apply only to you",
+                "requiresReload": "Changing this requires a FoundryVTT reload",
+                "reloadNeeded": "Reload the FoundryVTT page for the change to take effect"
+            },
+            "relayUsers": {
+                "header": "FoundryVTT users",
+                "activeRelay": "Active relay",
+                "noActiveRelay": "No active relay",
+                "headerStatus": "Status",
+                "headerUser": "User",
+                "notInGame": "not in game",
+                "assignTooltip": "Make the primary relay",
+                "unassignTooltip": "Remove assignment (the primary relay will be chosen automatically)",
+                "preferredTooltip": "The GM assigned this player as the primary relay",
+                "headerDiscord": "Discord profile"
+            },
+            "voiceChat": {
+                "muted": "Microphone muted",
+                "deafened": "Sound deafened",
+                "empty": "Nobody is in the channel",
+                "waitingData": "Waiting for channel data from the relay…",
+                "chatInactiveWarning": "Relay is inactive: the channel members will appear once someone enables the relay"
+            },
+            "foundryUserList": {
+                "placeholderDiscord": "Discord ID or nickname",
+                "unlinkProfile": "Unlink profile",
+                "awatingDataTooltip": "Profile not found yet. As soon as a member with this nickname/ID appears in the voice channel, the profile will be linked automatically"
+            },
+            "iconsTooltip": "Drag a member from the voice channel list onto the \"Discord profile\" cell, pick a profile from the suggestions, or type an ID/nickname and press Enter",
+            "log": {
+                "header": "Recent activity",
+                "speaking": "Speech",
+                "speakingTooltip": "Log who started and stopped speaking. These events are very frequent and quickly push out other entries",
+                "clear": "Clear log",
+                "empty": "Nothing happened yet. The log is kept only until the page is reloaded",
+                "types": {
+                    "channelLoaded": "Channel \"{channel}\" loaded: {count} members ({reason})",
+                    "channelCleared": "Channel members cleared: no active relay",
+                    "joined": "{nick} joined the channel",
+                    "left": "{nick} left the channel",
+                    "muted": "{nick} muted",
+                    "unmuted": "{nick} unmuted",
+                    "deafened": "{nick} deafened",
+                    "undeafened": "{nick} undeafened",
+                    "serverMuted": "A moderator muted {nick}",
+                    "serverUnmuted": "A moderator unmuted {nick}",
+                    "serverDeafened": "A moderator deafened {nick}",
+                    "serverUndeafened": "A moderator undeafened {nick}",
+                    "renamed": "{prevNick} is now {nick}",
+                    "avatarChanged": "{nick} changed avatar",
+                    "speakingStart": "{nick} started speaking",
+                    "speakingStop": "{nick} stopped speaking {reason}",
+                    "relayStarted": "{user} started the relay",
+                    "relayStopped": "{user}: relay stopped",
+                    "relayChanged": "Primary relay: {user}"
+                },
+                "reasons": {
+                    "relayStarted": "relay started",
+                    "channelChanged": "channel changed",
+                    "reconnected": "reconnected",
+                    "relayChanged": "relay changed",
+                    "clientJoined": "joined the world",
+                    "left": "(left the channel)",
+                    "relayLost": "(relay lost)",
+                    "snapshot": "(from channel members)"
+                }
+            }
+        },
+        "general": {
+            "unknownVoiceChat": "/Unknown voice chat/",
+            "voiceChatNotSet": "/Voice channel not set/"
+        },
+        "notifications": {
+            "voiceChatDataUpdated": "Voice channel saved",
+            "voiceChatDataCleared": "Voice channel cleared",
+            "worldLinkCopied": "World link copied",
+            "worldLinkCopyError": "Failed to copy the link. Open it in a browser: {url}",
+            "linkNeedsGm": "A GM must be in the game to link a profile"
+        },
+        "macros": {
+            "worldRules": "World rules",
+            "worldRulesHint": "GM rules: work for all players after any reload. \"At\" defines whose computer runs the macro",
+            "ownRules": "My rules",
+            "ownRulesHint": "Your personal rules: run only for you and with your permissions (e.g. a sound or effect on your screen)",
+            "allowPlayerRules": "Allow players to create their own rules",
+            "playerRulesDisabled": "The GM hasn't allowed players to create their own macro rules",
+            "addRule": "Add rule",
+            "removeRule": "Delete rule",
+            "noRules": "No rules yet",
+            "enabledTooltip": "Rule enabled",
+            "when": "When",
+            "run": "run",
+            "at": "at",
+            "atSelf": "for me",
+            "dropHere": "Drop a macro here",
+            "dropTooltip": "Drag a macro here from the hotbar or the macro directory",
+            "clearMacro": "Remove macro",
+            "macroMissing": "Macro deleted",
+            "notAMacro": "Only a macro can be dropped here",
+            "worldMacroOnly": "Only world macros can be used (not from a compendium)",
+            "cooldownTooltip": "No more often than once per this many seconds. Empty — no limit",
+            "noAccess": "No access to the macro",
+            "noAccessTooltip": "These players have no access to the macro (or no permission to run script macros), and Foundry won't let them run it",
+            "allowWithoutPermission": "run even if the player has no access",
+            "linkedNeverRuns": "This event has no channel member, so there is no linked player: the rule will never run. Choose another \"at\" option",
+            "events": {
+                "joined": "joined the channel",
+                "left": "left the channel",
+                "muted": "muted",
+                "unmuted": "unmuted",
+                "deafened": "deafened",
+                "undeafened": "undeafened",
+                "updated": "any member change",
+                "speakingStart": "started speaking",
+                "speakingStop": "stopped speaking",
+                "channelLoaded": "channel members loaded",
+                "relayStarted": "relay started",
+                "relayStopped": "relay stopped"
+            },
+            "targets": {
+                "gm": "once, at the GM",
+                "everyone": "at every player",
+                "linked": "at the player linked to the member",
+                "users": "at selected players"
+            },
+            "help": {
+                "title": "Cheat sheet: what's available in the macro",
+                "intro": "Write the macro as a regular script macro, without Hooks.on. All event data is in a single variable discordEvent (also scope.discordEvent): discordEvent.type, discordEvent.member, etc. Fields match the module's hook arguments. Missing data is null. The ▶ button of a rule runs the macro right now on your side with test data — handy for checking a macro without Discord.",
+                "commonTitle": "For all events",
+                "specificTitle": "For specific events",
+                "exampleTitle": "Example (rule \"started speaking\", at the GM)",
+                "common": {
+                    "type": "Which event fired: \"joined\", \"left\", \"muted\", \"unmuted\", \"deafened\", \"undeafened\", \"updated\", \"speakingStart\", \"speakingStop\", \"channelLoaded\", \"relayStarted\", \"relayStopped\"",
+                    "member": "Discord member: id, nick, name, avatarUrl, mute, deaf (combined: self or moderator), selfMute, serverMute, selfDeaf, serverDeaf, speaking, bot (for member events)",
+                    "foundryUser": "Foundry user linked to the member (first one), or null",
+                    "foundryUsers": "All Foundry users linked to the member (array)",
+                    "channel": "Voice channel: id, guildId, name, topic, userLimit",
+                    "members": "All voice channel members (array, like member)",
+                    "rule": "The rule that ran the macro",
+                    "speaker": "Regular Foundry variables"
+                },
+                "specific": {
+                    "previous": "muted / unmuted / deafened / undeafened / updated: member data before the change",
+                    "changed": "muted / unmuted / deafened / undeafened / updated: only the changed fields, e.g. {mute: true, selfMute: true} or {nick: \"Bob\"}",
+                    "reason": "speakingStart / speakingStop: null if the event came from Discord; \"left\", \"relayLost\" or \"snapshot\" if the module sent it. channelLoaded: \"relayStarted\", \"channelChanged\", \"reconnected\", \"relayChanged\" or \"clientJoined\"",
+                    "relayUser": "relayStarted / relayStopped: the Foundry user who started or stopped the relay",
+                    "test": "Test run (▶ button of a rule): true, otherwise false"
+                },
+                "example": "// Post to chat who started speaking\nconst name = discordEvent.foundryUser?.name ?? discordEvent.member.nick\nconst p = document.createElement(\"p\")\np.textContent = `${name} is speaking` // as text: a nickname may contain < and >\nChatMessage.create({content: p.outerHTML})"
+            },
+            "testTooltip": "Test: run the macro now on your side with test data (no Discord needed). In the macro, discordEvent.test = true",
+            "testMember": "Test member",
+            "errors": {
+                "local": "Rule \"{event}\" (macro \"{macro}\"): {message}",
+                "remote": "Rule \"{event}\" (macro \"{macro}\") at player {user}: {message}",
+                "noAccess": "the player has no access to the macro. Grant access or check \"run even if the player has no access\" in the rule",
+                "macroMissing": "the macro was deleted",
+                "noMacro": "No macro selected in the rule"
+            }
+        }
+    }
+}

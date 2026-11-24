@@ -1,0 +1,120 @@
+{{!-- Макросы по событиям --}}
+<section class="tab dsr-tab-content dsr-macros {{tab.cssClass}}" data-group="primary" data-tab="macros">
+    {{#each macros.sections as |section|}}
+        <div class="dsr-card dsr-rules" data-scope="{{section.scope}}">
+            <div class="dsr-rules__header">
+                <i class="{{section.icon}}"></i>
+                <label>{{section.title}}</label>
+                <button type="button" class="dsr-rules__add" data-action="addRule" data-scope="{{section.scope}}">
+                    <i class="fas fa-plus"></i>
+                    <span>{{localize "discord-relay.macros.addRule"}}</span>
+                </button>
+            </div>
+            <p class="hint">{{section.hint}}</p>
+            {{#if section.showAllowPlayers}}
+                <label class="dsr-rules__allow-players">
+                    <input type="checkbox" name="allowPlayerRules" {{checked @root.macros.allowPlayerRules}}>
+                    {{localize "discord-relay.macros.allowPlayerRules"}}
+                </label>
+            {{/if}}
+
+            {{!-- Правила --}}
+            <div class="dsr-rules__list">
+                {{#each section.rules as |rule|}}
+                    <div class="dsr-rule{{#unless rule.enabled}} dsr-disabled{{/unless}}" data-rule-id="{{rule.id}}" data-scope="{{section.scope}}">
+                        <div class="dsr-rule__main">
+                            <input type="checkbox" name="enabled" {{checked rule.enabled}} data-tooltip="{{localize "discord-relay.macros.enabledTooltip"}}">
+                            <span class="dsr-rule__word">{{localize "discord-relay.macros.when"}}</span>
+                            <select name="event">{{selectOptions @root.macros.eventOptions selected=rule.event}}</select>
+                            <span class="dsr-rule__word">{{localize "discord-relay.macros.run"}}</span>
+                            {{!-- Макрос: перетащить сюда --}}
+                            <div class="dsr-rule__macro dsr-macro-drop" data-tooltip="{{localize "discord-relay.macros.dropTooltip"}}">
+                                {{#if rule.macro}}
+                                    <a class="dsr-rule__macro-name" data-action="openRuleMacro" data-uuid="{{rule.macro.uuid}}">
+                                        <img src="{{rule.macro.img}}" alt="">
+                                        <span>{{rule.macro.name}}</span>
+                                    </a>
+                                    <a class="dsr-rule__macro-clear" data-action="clearRuleMacro" data-tooltip="{{localize "discord-relay.macros.clearMacro"}}"><i class="fas fa-xmark"></i></a>
+                                {{else if rule.macroMissing}}
+                                    <span class="dsr-rule__macro-missing"><i class="fas fa-triangle-exclamation"></i> {{localize "discord-relay.macros.macroMissing"}}</span>
+                                {{else}}
+                                    <span class="dsr-rule__macro-empty">{{localize "discord-relay.macros.dropHere"}}</span>
+                                {{/if}}
+                            </div>
+                            {{#if section.isWorld}}
+                                <span class="dsr-rule__word">{{localize "discord-relay.macros.at"}}</span>
+                                <select name="target">{{selectOptions rule.targetOptions selected=rule.target}}</select>
+                            {{else}}
+                                <span class="dsr-rule__word">{{localize "discord-relay.macros.atSelf"}}</span>
+                            {{/if}}
+                            <label class="dsr-rule__cooldown" data-tooltip="{{localize "discord-relay.macros.cooldownTooltip"}}">
+                                <i class="fas fa-stopwatch"></i>
+                                <input type="number" name="cooldownSec" min="0" step="0.5" value="{{rule.cooldownSec}}" placeholder="—">
+                            </label>
+                            <a class="dsr-rule__test" data-action="testRule" data-tooltip="{{localize "discord-relay.macros.testTooltip"}}"><i class="fas fa-play"></i></a>
+                            <a class="dsr-rule__remove" data-action="removeRule" data-tooltip="{{localize "discord-relay.macros.removeRule"}}"><i class="fas fa-trash"></i></a>
+                        </div>
+                        {{!-- Выбор игроков --}}
+                        {{#if rule.showUsers}}
+                            <div class="dsr-rule__users">
+                                {{#each rule.users as |user|}}
+                                    <label class="dsr-rule__user">
+                                        <input type="checkbox" name="userIds" value="{{user.id}}" {{checked user.checked}}>
+                                        {{user.name}}
+                                    </label>
+                                {{/each}}
+                            </div>
+                        {{/if}}
+                        {{!-- «У привязанного игрока» для события без участника --}}
+                        {{#if rule.linkedNeverRuns}}
+                            <div class="dsr-rule__access">
+                                <i class="fas fa-triangle-exclamation"></i>
+                                <span>{{localize "discord-relay.macros.linkedNeverRuns"}}</span>
+                            </div>
+                        {{/if}}
+                        {{!-- Нет доступа к макросу --}}
+                        {{#if rule.noAccessNames}}
+                            <div class="dsr-rule__access">
+                                <i class="fas fa-triangle-exclamation" data-tooltip="{{localize "discord-relay.macros.noAccessTooltip"}}"></i>
+                                <span>{{localize "discord-relay.macros.noAccess"}}: {{rule.noAccessNames}}</span>
+                                <label>
+                                    <input type="checkbox" name="allowWithoutPermission" {{checked rule.allowWithoutPermission}}>
+                                    {{localize "discord-relay.macros.allowWithoutPermission"}}
+                                </label>
+                            </div>
+                        {{/if}}
+                    </div>
+                {{else}}
+                    <p class="dsr-rules__empty">{{localize "discord-relay.macros.noRules"}}</p>
+                {{/each}}
+            </div>
+        </div>
+    {{/each}}
+
+    {{#if macros.playerRulesDisabled}}
+        <div class="dsr-notice dsr-notice--info">
+            <i class="fas fa-lock"></i>
+            <span>{{localize "discord-relay.macros.playerRulesDisabled"}}</span>
+        </div>
+    {{/if}}
+
+    {{!-- Памятка --}}
+    <details class="dsr-card dsr-macros-help">
+        <summary><i class="fas fa-circle-question"></i> {{localize "discord-relay.macros.help.title"}}</summary>
+        <p>{{localize "discord-relay.macros.help.intro"}}</p>
+        <h4>{{localize "discord-relay.macros.help.commonTitle"}}</h4>
+        <table class="dsr-macros-help__table">
+            {{#each macros.help.common as |row|}}
+                <tr><td><code>{{row.name}}</code></td><td>{{row.text}}</td></tr>
+            {{/each}}
+        </table>
+        <h4>{{localize "discord-relay.macros.help.specificTitle"}}</h4>
+        <table class="dsr-macros-help__table">
+            {{#each macros.help.specific as |row|}}
+                <tr><td><code>{{row.name}}</code></td><td>{{row.text}}</td></tr>
+            {{/each}}
+        </table>
+        <h4>{{localize "discord-relay.macros.help.exampleTitle"}}</h4>
+        <pre class="dsr-macros-help__code"><code>{{macros.help.example}}</code></pre>
+    </details>
+</section>

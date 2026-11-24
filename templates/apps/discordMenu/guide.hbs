@@ -1,0 +1,119 @@
+{{!-- Руководство по настройке ретранслятора --}}
+<section class="tab dsr-tab-content dsr-guide {{tab.cssClass}}" data-group="primary" data-tab="guide">
+    {{!-- Перед началом --}}
+    <section class="dsr-guide-section">
+        <h2 class="dsr-guide-title">{{localize "discord-relay.discordMenu.guide.before.title"}}</h2>
+        <ul class="dsr-guide-list">
+            <li>{{localize "discord-relay.discordMenu.guide.before.items.1"}}</li>
+            <li>{{localize "discord-relay.discordMenu.guide.before.items.2"}}</li>
+        </ul>
+    </section>
+
+    {{!-- Термины --}}
+    <section class="dsr-guide-section">
+        <h2 class="dsr-guide-title">{{localize "discord-relay.discordMenu.guide.terms.title"}}</h2>
+        <ul class="dsr-guide-list">
+            <li>{{localize "discord-relay.discordMenu.guide.terms.items.1"}}</li>
+            <li>{{localize "discord-relay.discordMenu.guide.terms.items.2"}}</li>
+        </ul>
+    </section>
+
+    {{!-- Подготовка --}}
+    <section class="dsr-guide-section">
+        <h2 class="dsr-guide-title">{{localize "discord-relay.discordMenu.guide.prep.title"}}</h2>
+        <p>{{localize "discord-relay.discordMenu.guide.prep.intro"}}</p>
+
+        {{!-- 1) TamperMonkey --}}
+        <h3 class="dsr-guide-subtitle">{{localize "discord-relay.discordMenu.guide.prep.tamper.title"}}</h3>
+        <ul class="dsr-guide-list">
+            <li>
+                {{localize "discord-relay.discordMenu.guide.prep.tamper.items.1"}}
+                <div class="dsr-guide-actions">
+                    <button type="button" data-action="openTamperMonkeySite">
+                        <i class="fas fa-puzzle-piece"></i>
+                        <span>{{localize "discord-relay.discordMenu.guide.script.openTamperMonkey"}}</span>
+                    </button>
+                </div>
+            </li>
+            <li>
+                {{localize "discord-relay.discordMenu.guide.prep.tamper.items.2"}}
+                <ul class="dsr-guide-list dsr-guide-list--nested">
+                    <li>{{localize "discord-relay.discordMenu.guide.prep.tamper.browsers.firefox"}}</li>
+                    <li>{{localize "discord-relay.discordMenu.guide.prep.tamper.browsers.opera"}}</li>
+                    <li>{{localize "discord-relay.discordMenu.guide.prep.tamper.browsers.chrome"}}</li>
+                    <li>{{localize "discord-relay.discordMenu.guide.prep.tamper.browsers.edge"}}</li>
+                    <li>{{localize "discord-relay.discordMenu.guide.prep.tamper.browsers.other"}}</li>
+                </ul>
+            </li>
+        </ul>
+
+        {{!-- 2) Скрипт --}}
+        <h3 class="dsr-guide-subtitle">{{localize "discord-relay.discordMenu.guide.prep.script.title"}}</h3>
+        <ul class="dsr-guide-list">
+            <li>
+                {{localize "discord-relay.discordMenu.guide.prep.script.items.1"}}
+                <div class="dsr-guide-actions">
+                    <button type="button" class="dsr-guide-install" data-action="installScript">
+                        <i class="fas fa-download"></i>
+                        <span>{{localize "discord-relay.discordMenu.guide.script.install"}} ({{guide.scriptVersion}})</span>
+                    </button>
+                </div>
+            </li>
+            <li>{{localize "discord-relay.discordMenu.guide.prep.script.items.2"}}</li>
+            <li>{{localize "discord-relay.discordMenu.guide.prep.script.items.3"}}</li>
+        </ul>
+
+        {{!-- Запасной способ: вручную --}}
+        <details class="dsr-guide-script">
+            <summary>
+                <i class="fas fa-caret-right"></i>
+                <span>{{localize "discord-relay.discordMenu.guide.prep.script.manualTitle"}}</span>
+            </summary>
+            <ul class="dsr-guide-list">
+                <li>{{localize "discord-relay.discordMenu.guide.prep.script.manual.1"}}</li>
+                <li>{{localize "discord-relay.discordMenu.guide.prep.script.manual.2"}} <kbd>Ctrl</kbd> + <kbd>S</kbd></li>
+            </ul>
+            {{#if guide.script}}
+                <div class="dsr-guide-actions">
+                    <button type="button" data-action="copyScript">
+                        <i class="fas fa-copy"></i>
+                        <span>{{localize "discord-relay.discordMenu.guide.script.copy"}}</span>
+                    </button>
+                </div>
+                <pre class="dsr-guide-script__code"><code>{{guide.script}}</code></pre>
+            {{else}}
+                <p class="dsr-guide-script__error">{{localize "discord-relay.discordMenu.guide.script.loadError"}}</p>
+            {{/if}}
+        </details>
+
+        {{!-- 3) Запуск --}}
+        <h3 class="dsr-guide-subtitle">{{localize "discord-relay.discordMenu.guide.prep.launch.title"}}</h3>
+        <ul class="dsr-guide-list">
+            <li>{{localize "discord-relay.discordMenu.guide.prep.launch.items.1"}}</li>
+            <li>{{localize "discord-relay.discordMenu.guide.prep.launch.items.2"}}</li>
+            <li>{{localize "discord-relay.discordMenu.guide.prep.launch.items.3"}}</li>
+            <li>{{localize "discord-relay.discordMenu.guide.prep.launch.items.4"}}</li>
+        </ul>
+
+        {{!-- Примечания --}}
+        <h3 class="dsr-guide-subtitle">{{localize "discord-relay.discordMenu.guide.prep.notes.title"}}</h3>
+        <ul class="dsr-guide-list">
+            <li>{{localize "discord-relay.discordMenu.guide.prep.notes.items.1"}}</li>
+            <li>{{localize "discord-relay.discordMenu.guide.prep.notes.items.2"}}</li>
+            <li>{{localize "discord-relay.discordMenu.guide.prep.notes.items.3"}}</li>
+        </ul>
+    </section>
+
+    {{!-- Интеграция с VisualNovelDialogues --}}
+    <section class="dsr-guide-section">
+        <h2 class="dsr-guide-title">{{localize "discord-relay.discordMenu.guide.vnd.title"}}</h2>
+        <p>{{localize "discord-relay.discordMenu.guide.vnd.intro"}}</p>
+        <h3 class="dsr-guide-subtitle">{{localize "discord-relay.discordMenu.guide.vnd.subtitle"}}</h3>
+        <ul class="dsr-guide-list">
+            <li>{{localize "discord-relay.discordMenu.guide.vnd.items.1"}}</li>
+            <li>{{localize "discord-relay.discordMenu.guide.vnd.items.2"}}</li>
+            <li>{{localize "discord-relay.discordMenu.guide.vnd.items.3"}}</li>
+            <li>{{localize "discord-relay.discordMenu.guide.vnd.items.4"}}</li>
+        </ul>
+    </section>
+</section>

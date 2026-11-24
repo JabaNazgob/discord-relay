@@ -1,0 +1,32 @@
+{{!-- Настройки модуля (вкладка «Настройки»): те же настройки, что в «Настройках модулей» Foundry --}}
+{{!-- standard-form: раскладка полей Foundry (подпись слева, поле справа), как в «Настройках модулей» --}}
+<section class="tab dsr-tab-content dsr-settings standard-form {{tab.cssClass}}" data-group="primary" data-tab="settings">
+    {{#each settings.groups as |group|}}
+        <div class="dsr-card">
+            <div class="dsr-settings__header">
+                <i class="{{group.icon}}"></i>
+                <label>{{group.title}}</label>
+            </div>
+            <p class="hint dsr-settings__group-hint">{{group.hint}}</p>
+            {{#each group.fields as |field|}}
+                <div class="form-group dsr-settings__field" data-setting="{{field.key}}">
+                    <label for="dsr-setting-{{field.key}}">
+                        {{field.name}}
+                        {{#if field.requiresReload}}<i class="fas fa-rotate dsr-settings__reload" data-tooltip="{{localize "discord-relay.discordMenu.settingsTab.requiresReload"}}"></i>{{/if}}
+                    </label>
+                    <div class="form-fields">
+                        {{#if field.isBoolean}}
+                            <input type="checkbox" id="dsr-setting-{{field.key}}" name="{{field.key}}" {{checked field.value}} {{disabled field.readOnly}}>
+                        {{else if field.range}}
+                            <range-picker id="dsr-setting-{{field.key}}" name="{{field.key}}" value="{{field.value}}"
+                                          min="{{field.range.min}}" max="{{field.range.max}}" step="{{field.range.step}}" {{disabled field.readOnly}}></range-picker>
+                        {{else}}
+                            <input type="number" id="dsr-setting-{{field.key}}" name="{{field.key}}" value="{{field.value}}" {{disabled field.readOnly}}>
+                        {{/if}}
+                    </div>
+                    <p class="hint">{{field.hint}}</p>
+                </div>
+            {{/each}}
+        </div>
+    {{/each}}
+</section>
